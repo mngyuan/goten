@@ -41,6 +41,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.1.10",
+    "biome": "^0.3.3",
     "typescript": "~5.9.2"
   },
   "private": true
