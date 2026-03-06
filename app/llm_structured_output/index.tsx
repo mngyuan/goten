@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -21,9 +21,9 @@ import {
 import PauseIcon from '../../assets/icons/pause_icon.svg';
 import ColorPalette from '../../colors';
 import Messages from '../../components/Messages';
-import { useIsFocused } from '@react-navigation/native';
-import { GeneratingContext } from '../../context';
-import { Schema } from 'jsonschema';
+import {useIsFocused} from '@react-navigation/native';
+import {GeneratingContext} from '../../context';
+import {Schema} from 'jsonschema';
 import * as z from 'zod/v4';
 
 // Defining schemas
@@ -53,12 +53,12 @@ const responseSchema: Schema = {
 const responseSchemaWithZod = z.object({
   username: z
     .string()
-    .meta({ description: 'Name of user, that is asking a question.' }),
+    .meta({description: 'Name of user, that is asking a question.'}),
   question: z.optional(
-    z.string().meta({ description: 'Question that user asks.' })
+    z.string().meta({description: 'Question that user asks.'}),
   ),
-  bid: z.number().meta({ description: 'Amount of money, that user offers.' }),
-  currency: z.optional(z.string().meta({ description: 'Currency of offer.' })),
+  bid: z.number().meta({description: 'Amount of money, that user offers.'}),
+  currency: z.optional(z.string().meta({description: 'Currency of offer.'})),
 });
 
 export default function LLMScreenWrapper() {
@@ -71,15 +71,15 @@ function LLMScreen() {
   const [isTextInputFocused, setIsTextInputFocused] = useState(false);
   const [userInput, setUserInput] = useState('');
   const textInputRef = useRef<TextInput>(null);
-  const { setGlobalGenerating } = useContext(GeneratingContext);
+  const {setGlobalGenerating} = useContext(GeneratingContext);
 
-  const llm = useLLM({ model: QWEN3_1_7B_QUANTIZED }); // try out 4B model if 1.7B struggles with following structured output
+  const llm = useLLM({model: QWEN3_1_7B_QUANTIZED}); // try out 4B model if 1.7B struggles with following structured output
 
   useEffect(() => {
     setGlobalGenerating(llm.isGenerating);
   }, [llm.isGenerating, setGlobalGenerating]);
 
-  const { configure } = llm;
+  const {configure} = llm;
   useEffect(() => {
     const formattingInstructions = getStructuredOutputPrompt(responseSchema);
     const prompt = `Your goal is to parse user's messages and return them in JSON format. Don't respond to user. Simply return JSON with user's question parsed. \n${formattingInstructions}\n /no_think`;
@@ -97,21 +97,21 @@ function LLMScreen() {
       try {
         const formattedOutput = fixAndValidateStructuredOutput(
           lastMessage.content,
-          responseSchema
+          responseSchema,
         );
         const formattedOutputWithZod = fixAndValidateStructuredOutput(
           lastMessage.content,
-          responseSchemaWithZod
+          responseSchemaWithZod,
         );
         console.log(
           'Formatted output:',
           formattedOutput,
-          formattedOutputWithZod
+          formattedOutputWithZod,
         );
       } catch (e) {
         console.log(
           "Error parsing output and/or output doesn't match required schema!",
-          e
+          e,
         );
       }
     }
@@ -213,9 +213,9 @@ function LLMScreen() {
 }
 
 const styles = StyleSheet.create({
-  keyboardAvoidingView: { flex: 1 },
-  container: { flex: 1, paddingBottom: Platform.OS === 'android' ? 20 : 0 },
-  chatContainer: { flex: 10, width: '100%' },
+  keyboardAvoidingView: {flex: 1},
+  container: {flex: 1, paddingBottom: Platform.OS === 'android' ? 20 : 0},
+  chatContainer: {flex: 10, width: '100%'},
   helloMessageContainer: {
     flex: 10,
     width: '100%',

@@ -1,21 +1,21 @@
-import { Drawer } from 'expo-router/drawer';
+import {Drawer} from 'expo-router/drawer';
 import ColorPalette from '../colors';
-import React, { useState } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import React, {useState} from 'react';
+import {Text, StyleSheet, View} from 'react-native';
 
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import { GeneratingContext } from '../context';
+import {GeneratingContext} from '../context';
 
 interface CustomDrawerProps extends DrawerContentComponentProps {
   isGenerating: boolean;
 }
 
 function CustomDrawerContent(props: CustomDrawerProps) {
-  const { isGenerating, ...otherProps } = props;
+  const {isGenerating, ...otherProps} = props;
   return (
     <DrawerContentScrollView {...otherProps}>
       {!isGenerating ? (
@@ -49,7 +49,7 @@ export default function _layout() {
           drawerActiveTintColor: ColorPalette.primary,
           drawerInactiveTintColor: '#888',
           headerTintColor: ColorPalette.primary,
-          headerTitleStyle: { color: ColorPalette.primary },
+          headerTitleStyle: {color: ColorPalette.primary},
         }}
       >
         <Drawer.Screen
@@ -57,7 +57,7 @@ export default function _layout() {
           options={{
             drawerLabel: 'LLM',
             title: 'LLM',
-            headerTitleStyle: { color: ColorPalette.primary },
+            headerTitleStyle: {color: ColorPalette.primary},
           }}
         />
         <Drawer.Screen
@@ -65,7 +65,7 @@ export default function _layout() {
           options={{
             drawerLabel: 'LLM Tool Calling',
             title: 'LLM Tool Calling',
-            headerTitleStyle: { color: ColorPalette.primary },
+            headerTitleStyle: {color: ColorPalette.primary},
           }}
         />
         <Drawer.Screen
@@ -73,7 +73,7 @@ export default function _layout() {
           options={{
             drawerLabel: 'LLM Structured Output',
             title: 'LLM Structured Output',
-            headerTitleStyle: { color: ColorPalette.primary },
+            headerTitleStyle: {color: ColorPalette.primary},
           }}
         />
         <Drawer.Screen
@@ -81,7 +81,7 @@ export default function _layout() {
           options={{
             drawerLabel: 'Voice Chat',
             title: 'Voice Chat',
-            headerTitleStyle: { color: ColorPalette.primary },
+            headerTitleStyle: {color: ColorPalette.primary},
           }}
         />
         <Drawer.Screen
@@ -89,7 +89,7 @@ export default function _layout() {
           options={{
             drawerLabel: () => null,
             title: 'Main Menu',
-            drawerItemStyle: { display: 'none' },
+            drawerItemStyle: {display: 'none'},
           }}
         />
       </Drawer>

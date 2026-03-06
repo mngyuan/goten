@@ -1,11 +1,11 @@
-const { getDefaultConfig } = require('expo/metro-config');
+const {getDefaultConfig} = require('expo/metro-config');
 const {
   wrapWithAudioAPIMetroConfig,
 } = require('react-native-audio-api/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
-const { transformer, resolver } = config;
+const {transformer, resolver} = config;
 
 config.transformer = {
   ...transformer,

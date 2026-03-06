@@ -1,22 +1,16 @@
-import React, { memo } from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  Platform,
-} from 'react-native';
+import React, {memo} from 'react';
+import {View, StyleSheet, TouchableOpacity, Text, Platform} from 'react-native';
 import MarkdownComponent from './MarkdownComponent';
 import LlamaIcon from '../assets/icons/llama_icon.svg';
 import ColorPalette from '../colors';
-import { Message } from 'react-native-executorch';
+import {Message} from 'react-native-executorch';
 
 interface MessageItemProps {
   message: Message;
   deleteMessage: () => void;
 }
 
-const MessageItem = memo(({ message, deleteMessage }: MessageItemProps) => {
+const MessageItem = memo(({message, deleteMessage}: MessageItemProps) => {
   return (
     <View
       style={

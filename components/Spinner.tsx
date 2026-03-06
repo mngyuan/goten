@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Modal } from 'react-native';
+import {View, Text, StyleSheet, ActivityIndicator, Modal} from 'react-native';
 import ColorPalette from '../colors';
 
 interface SpinnerProps {
@@ -7,7 +7,7 @@ interface SpinnerProps {
   textContent: string;
 }
 
-const Spinner = ({ visible, textContent }: SpinnerProps) => {
+const Spinner = ({visible, textContent}: SpinnerProps) => {
   return (
     <Modal transparent={true} animationType="fade" visible={visible}>
       <View style={styles.overlay}>

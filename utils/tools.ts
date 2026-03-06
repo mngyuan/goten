@@ -1,11 +1,11 @@
 import * as Calendar from 'expo-calendar';
 import * as Brightness from 'expo-brightness';
-import { clamp } from 'react-native-reanimated';
-import { Platform } from 'react-native';
-import { ToolCall } from 'react-native-executorch';
+import {clamp} from 'react-native-reanimated';
+import {Platform} from 'react-native';
+import {ToolCall} from 'react-native-executorch';
 
 export const executeTool: (call: ToolCall) => Promise<string | null> = async (
-  call
+  call,
 ) => {
   switch (call.toolName) {
     case 'brightness':
@@ -95,8 +95,8 @@ const brightness = async (call: ToolCall) => {
         (await Brightness.getBrightnessAsync()) +
           call.arguments.relativeChange / 100,
         0,
-        1
-      )
+        1,
+      ),
     );
   }
   return null;
@@ -109,12 +109,12 @@ const readCalendar = async (call: ToolCall) => {
     'timeStart' in call.arguments &&
       typeof call.arguments.timeStart === 'string'
       ? call.arguments.timeStart
-      : ''
+      : '',
   );
   let endTime = Date.parse(
     'timeEnd' in call.arguments && typeof call.arguments.timeEnd === 'string'
       ? call.arguments.timeEnd
-      : ''
+      : '',
   );
 
   if (
@@ -135,7 +135,7 @@ const readCalendar = async (call: ToolCall) => {
       date.getDate(),
       0,
       0,
-      0
+      0,
     ).valueOf();
 
     // Set the time to 23:59:59 for the end of the day
@@ -145,7 +145,7 @@ const readCalendar = async (call: ToolCall) => {
       date.getDate(),
       23,
       59,
-      59
+      59,
     ).valueOf();
   } else if (Number.isNaN(startTime) || Number.isNaN(endTime)) {
     if (Number.isNaN(startTime)) {
@@ -156,7 +156,7 @@ const readCalendar = async (call: ToolCall) => {
         today.getDate(),
         0,
         0,
-        0
+        0,
       ).valueOf();
     } else if (Number.isNaN(endTime)) {
       const today = new Date();
@@ -167,23 +167,23 @@ const readCalendar = async (call: ToolCall) => {
         today.getDate(),
         23,
         59,
-        59
+        59,
       ).valueOf();
     }
   }
   const startDate = new Date(startTime);
   const endDate = new Date(endTime);
   const calendars = await Calendar.getCalendarsAsync(
-    Platform.OS === 'ios' ? Calendar.EntityTypes.EVENT : undefined
+    Platform.OS === 'ios' ? Calendar.EntityTypes.EVENT : undefined,
   );
   const events = await Calendar.getEventsAsync(
     calendars.map((calendar) => calendar.id),
     startDate,
-    endDate
+    endDate,
   );
 
   const eventsStringRepresentation = events.map(
-    (event) => `${event.title}, from: ${event.startDate}, to: ${event.endDate}`
+    (event) => `${event.title}, from: ${event.startDate}, to: ${event.endDate}`,
   );
   return eventsStringRepresentation.join('\n');
 };
@@ -197,7 +197,7 @@ const addEventToCalendar = async (call: ToolCall) => {
     typeof call.arguments.title === 'string'
   ) {
     const calendars = await Calendar.getCalendarsAsync(
-      Platform.OS === 'ios' ? Calendar.EntityTypes.EVENT : undefined
+      Platform.OS === 'ios' ? Calendar.EntityTypes.EVENT : undefined,
     );
     let startDate = new Date(Date.parse(call.arguments.time));
     const endDate = new Date(startDate);

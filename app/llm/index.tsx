@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -11,12 +11,12 @@ import {
   View,
 } from 'react-native';
 import SendIcon from '../../assets/icons/send_icon.svg';
-import { useLLM, LLAMA3_2_1B_SPINQUANT } from 'react-native-executorch';
+import {useLLM, LLAMA3_2_1B_SPINQUANT} from 'react-native-executorch';
 import PauseIcon from '../../assets/icons/pause_icon.svg';
 import ColorPalette from '../../colors';
 import Messages from '../../components/Messages';
-import { useIsFocused } from '@react-navigation/native';
-import { GeneratingContext } from '../../context';
+import {useIsFocused} from '@react-navigation/native';
+import {GeneratingContext} from '../../context';
 import Spinner from '../../components/Spinner';
 
 export default function LLMScreenWrapper() {
@@ -28,9 +28,9 @@ function LLMScreen() {
   const [isTextInputFocused, setIsTextInputFocused] = useState(false);
   const [userInput, setUserInput] = useState('');
   const textInputRef = useRef<TextInput>(null);
-  const { setGlobalGenerating } = useContext(GeneratingContext);
+  const {setGlobalGenerating} = useContext(GeneratingContext);
 
-  const llm = useLLM({ model: LLAMA3_2_1B_SPINQUANT });
+  const llm = useLLM({model: LLAMA3_2_1B_SPINQUANT});
 
   useEffect(() => {
     if (llm.error) {
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: Platform.OS === 'android' ? 20 : 0,
   },
-  container: { flex: 1 },
-  chatContainer: { flex: 10, width: '100%' },
+  container: {flex: 1},
+  chatContainer: {flex: 10, width: '100%'},
   helloMessageContainer: {
     flex: 10,
     width: '100%',

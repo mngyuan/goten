@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Animated, {
   interpolateColor,
   useAnimatedStyle,
@@ -10,7 +10,7 @@ import ColorPalette from '../colors';
 
 export default function AnimatedChatLoading() {
   const progress = useSharedValue(0);
-  progress.value = withRepeat(withTiming(1, { duration: 500 }), -1, true);
+  progress.value = withRepeat(withTiming(1, {duration: 500}), -1, true);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -21,7 +21,7 @@ export default function AnimatedChatLoading() {
           ColorPalette.seaBlueLight,
           ColorPalette.seaBlueMedium,
           ColorPalette.seaBlueDark,
-        ]
+        ],
       ),
     };
   });

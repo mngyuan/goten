@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -23,9 +23,9 @@ import ColorPalette from '../../colors';
 import Messages from '../../components/Messages';
 import * as Brightness from 'expo-brightness';
 import * as Calendar from 'expo-calendar';
-import { executeTool, TOOL_DEFINITIONS_PHONE } from '../../utils/tools';
-import { useIsFocused } from '@react-navigation/native';
-import { GeneratingContext } from '../../context';
+import {executeTool, TOOL_DEFINITIONS_PHONE} from '../../utils/tools';
+import {useIsFocused} from '@react-navigation/native';
+import {GeneratingContext} from '../../context';
 
 export default function LLMToolCallingScreenWrapper() {
   const isFocused = useIsFocused();
@@ -37,15 +37,15 @@ function LLMToolCallingScreen() {
   const [isTextInputFocused, setIsTextInputFocused] = useState(false);
   const [userInput, setUserInput] = useState('');
   const textInputRef = useRef<TextInput>(null);
-  const { setGlobalGenerating } = useContext(GeneratingContext);
+  const {setGlobalGenerating} = useContext(GeneratingContext);
 
-  const llm = useLLM({ model: HAMMER2_1_1_5B_QUANTIZED });
+  const llm = useLLM({model: HAMMER2_1_1_5B_QUANTIZED});
 
   useEffect(() => {
     setGlobalGenerating(llm.isGenerating);
   }, [llm.isGenerating, setGlobalGenerating]);
 
-  const { configure } = llm;
+  const {configure} = llm;
   useEffect(() => {
     configure({
       chatConfig: {
@@ -68,19 +68,19 @@ function LLMToolCallingScreen() {
   // PERMISSIONS
   useEffect(() => {
     (async () => {
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      const {status} = await Calendar.requestCalendarPermissionsAsync();
       if (status !== 'granted') {
         console.log(
-          'No access to calendar! We need this to use app correctly!'
+          'No access to calendar! We need this to use app correctly!',
         );
       }
     })();
 
     (async () => {
-      const { status } = await Brightness.requestPermissionsAsync();
+      const {status} = await Brightness.requestPermissionsAsync();
       if (status !== 'granted') {
         console.log(
-          'No access to brightness! We need this to use app correctly!'
+          'No access to brightness! We need this to use app correctly!',
         );
       }
     })();
@@ -100,7 +100,7 @@ function LLMToolCallingScreen() {
     <Spinner
       visible={!llm.isReady}
       textContent={`Loading the model ${(llm.downloadProgress * 100).toFixed(
-        0
+        0,
       )} %`}
     />
   ) : (
@@ -176,16 +176,16 @@ function LLMToolCallingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingBottom: Platform.OS === 'android' ? 20 : 0 },
-  keyboardAvoidingView: { flex: 1 },
+  container: {flex: 1, paddingBottom: Platform.OS === 'android' ? 20 : 0},
+  keyboardAvoidingView: {flex: 1},
   topContainer: {
     height: 68,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chatContainer: { flex: 10, width: '100%' },
-  textModelName: { color: ColorPalette.primary },
+  chatContainer: {flex: 10, width: '100%'},
+  textModelName: {color: ColorPalette.primary},
   helloMessageContainer: {
     flex: 10,
     width: '100%',

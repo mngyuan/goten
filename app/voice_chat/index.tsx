@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -22,10 +22,10 @@ import MicIcon from '../../assets/icons/mic_icon.svg';
 import StopIcon from '../../assets/icons/stop_icon.svg';
 import ColorPalette from '../../colors';
 import Messages from '../../components/Messages';
-import { AudioManager, AudioRecorder } from 'react-native-audio-api';
+import {AudioManager, AudioRecorder} from 'react-native-audio-api';
 import DeviceInfo from 'react-native-device-info';
-import { useIsFocused } from '@react-navigation/native';
-import { GeneratingContext } from '../../context';
+import {useIsFocused} from '@react-navigation/native';
+import {GeneratingContext} from '../../context';
 
 export default function VoiceChatScreenWrapper() {
   const isFocused = useIsFocused();
@@ -40,12 +40,12 @@ function VoiceChatScreen() {
       new AudioRecorder({
         sampleRate: 16000,
         bufferLengthInSamples: 1600,
-      })
+      }),
   );
   const messageRecorded = useRef<boolean>(false);
-  const { setGlobalGenerating } = useContext(GeneratingContext);
+  const {setGlobalGenerating} = useContext(GeneratingContext);
 
-  const llm = useLLM({ model: QWEN3_0_6B_QUANTIZED });
+  const llm = useLLM({model: QWEN3_0_6B_QUANTIZED});
   const speechToText = useSpeechToText({
     model: WHISPER_TINY_EN,
   });
@@ -71,7 +71,7 @@ function VoiceChatScreen() {
       speechToText.streamStop();
     } else {
       setIsRecording(true);
-      recorder.onAudioReady(({ buffer }) => {
+      recorder.onAudioReady(({buffer}) => {
         speechToText.streamInsert(buffer.getChannelData(0));
       });
       recorder.start();
