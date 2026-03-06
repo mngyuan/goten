@@ -1,81 +1,108 @@
 import {useRouter} from 'expo-router';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import ColorPalette from '../colors';
-import ExecutorchLogo from '../assets/icons/executorch.svg';
+import {useCallback, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {useModel} from '../providers/ModelProvider';
+import Spinner from '../components/Spinner';
+import {getTodayISO, getDiaryDay} from '../utils/diary';
 
-export default function Home() {
+export default function HomeScreen() {
   const router = useRouter();
+  const llm = useModel();
+  const [todayHasEntries, setTodayHasEntries] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      getDiaryDay(getTodayISO()).then((day) => {
+        setTodayHasEntries(
+          !!day && day.entries.some((e) => e.trim().length > 0),
+        );
+      });
+    }, []),
+  );
+
+  if (!llm.isReady) {
+    return (
+      <Spinner
+        visible={true}
+        textContent={`Loading model ${(llm.downloadProgress * 100).toFixed(0)}%`}
+      />
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <ExecutorchLogo width={64} height={64} />
-      <Text style={styles.headerText}>Select a demo model</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.navigate('llm/')}
-        >
-          <Text style={styles.buttonText}>LLM</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.navigate('llm_tool_calling/')}
-        >
-          <Text style={styles.buttonText}>LLM Tool Calling</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.navigate('llm_structured_output/')}
-        >
-          <Text style={styles.buttonText}>LLM Structured Output</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.navigate('voice_chat/')}
-        >
-          <Text style={styles.buttonText}>Voice Chat</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.menuButton}>
+          <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
       </View>
-    </View>
+      <View style={styles.content}>
+        <Text style={styles.title}>Goten</Text>
+      </View>
+      <View style={styles.bottom}>
+        <TouchableOpacity
+          style={styles.diaryButton}
+          onPress={() => router.push('/diary')}
+        >
+          <Text style={styles.diaryButtonText}>
+            {todayHasEntries ? "Today's Diary" : 'Start Writing'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
-
-export const fontSizes = {
-  xxl: 34,
-  xl: 22,
-  lg: 18,
-  md: 16,
-  sm: 14,
-  xs: 12,
-  xxs: 10,
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#fff',
   },
-  headerText: {
-    fontSize: fontSizes.lg,
-    color: ColorPalette.strongPrimary,
-    margin: 20,
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
   },
-  buttonContainer: {
-    width: '80%',
-    justifyContent: 'space-evenly',
-    marginBottom: 20,
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
   },
-  button: {
-    backgroundColor: ColorPalette.strongPrimary,
-    borderRadius: 8,
-    padding: 10,
+  menuIcon: {
+    fontSize: 24,
+    color: '#000',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: 'flex-start',
+    paddingTop: 8,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000',
+    fontFamily: 'medium',
+  },
+  bottom: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  diaryButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginBottom: 10,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: fontSizes.md,
+  diaryButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
