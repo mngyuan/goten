@@ -5,7 +5,6 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +16,7 @@ import AnimatedChatLoading from '../components/AnimatedChatLoading';
 import {useModel} from '../providers/ModelProvider';
 import {getDiaryDay, getTodayISO} from '../utils/diary';
 import {buildSystemPrompt} from '../utils/systemPrompt';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type ReviewMode = 'review' | 'suggest' | 'grammar';
 

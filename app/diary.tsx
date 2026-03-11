@@ -3,7 +3,6 @@ import {useRouter} from 'expo-router';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Keyboard,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,6 +17,7 @@ import {
   getTodayISO,
   saveDiaryDay,
 } from '../utils/diary';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MAX_ENTRIES = 5;
 

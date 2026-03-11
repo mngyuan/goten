@@ -36,9 +36,12 @@
             "android.permission.RECORD_AUDIO"
           ],
           "androidForegroundService": true,
-          "androidFSTypes": ["mediaPlayback"]
+          "androidFSTypes": [
+            "mediaPlayback"
+          ]
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "newArchEnabled": true,
     "splash": {
