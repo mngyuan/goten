@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, ActivityIndicator, Modal} from 'react-native';
+import {ActivityIndicator, Modal, StyleSheet, Text, View} from 'react-native';
 import ColorPalette from '../colors';
 
 interface SpinnerProps {

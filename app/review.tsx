@@ -1,22 +1,22 @@
+import {useFocusEffect} from '@react-navigation/native';
 import {useRouter} from 'expo-router';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import {useModel} from '../providers/ModelProvider';
-import {getTodayISO, getDiaryDay} from '../utils/diary';
-import {buildSystemPrompt} from '../utils/systemPrompt';
 import AnimatedChatLoading from '../components/AnimatedChatLoading';
+import {useModel} from '../providers/ModelProvider';
+import {getDiaryDay, getTodayISO} from '../utils/diary';
+import {buildSystemPrompt} from '../utils/systemPrompt';
 
 type ReviewMode = 'review' | 'suggest' | 'grammar';
 
@@ -79,11 +79,7 @@ export default function ReviewScreen() {
 
   // Capture completed assistant responses
   useEffect(() => {
-    if (
-      !llm.isGenerating &&
-      llm.response &&
-      initialized
-    ) {
+    if (!llm.isGenerating && llm.response && initialized) {
       setMessages((prev) => [
         ...prev,
         {role: 'assistant', content: llm.response.trim()},

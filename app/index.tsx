@@ -1,16 +1,16 @@
+import {useFocusEffect} from '@react-navigation/native';
 import {useRouter} from 'expo-router';
 import {useCallback, useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import {useModel} from '../providers/ModelProvider';
 import Spinner from '../components/Spinner';
-import {getTodayISO, getDiaryDay} from '../utils/diary';
+import {useModel} from '../providers/ModelProvider';
+import {getDiaryDay, getTodayISO} from '../utils/diary';
 
 export default function HomeScreen() {
   const router = useRouter();

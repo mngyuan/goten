@@ -1,9 +1,9 @@
 import React, {memo} from 'react';
-import {View, StyleSheet, TouchableOpacity, Text, Platform} from 'react-native';
-import MarkdownComponent from './MarkdownComponent';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import type {Message} from 'react-native-executorch';
 import LlamaIcon from '../assets/icons/llama_icon.svg';
 import ColorPalette from '../colors';
-import {Message} from 'react-native-executorch';
+import MarkdownComponent from './MarkdownComponent';
 
 interface MessageItemProps {
   message: Message;

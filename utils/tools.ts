@@ -1,8 +1,8 @@
-import * as Calendar from 'expo-calendar';
 import * as Brightness from 'expo-brightness';
-import {clamp} from 'react-native-reanimated';
+import * as Calendar from 'expo-calendar';
 import {Platform} from 'react-native';
-import {ToolCall} from 'react-native-executorch';
+import type {ToolCall} from 'react-native-executorch';
+import {clamp} from 'react-native-reanimated';
 
 export const executeTool: (call: ToolCall) => Promise<string | null> = async (
   call,
@@ -199,7 +199,7 @@ const addEventToCalendar = async (call: ToolCall) => {
     const calendars = await Calendar.getCalendarsAsync(
       Platform.OS === 'ios' ? Calendar.EntityTypes.EVENT : undefined,
     );
-    let startDate = new Date(Date.parse(call.arguments.time));
+    const startDate = new Date(Date.parse(call.arguments.time));
     const endDate = new Date(startDate);
     endDate.setHours(endDate.getHours() + 1);
 

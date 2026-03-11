@@ -1,10 +1,10 @@
 import {useRef} from 'react';
-import {ScrollView, StyleSheet, View, Text} from 'react-native';
-import AnimatedChatLoading from './AnimatedChatLoading';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import type {Message} from 'react-native-executorch';
 import LlamaIcon from '../assets/icons/llama_icon.svg';
 import ColorPalette from '../colors';
+import AnimatedChatLoading from './AnimatedChatLoading';
 import MessageItem from './MessageItem';
-import {Message} from 'react-native-executorch';
 
 interface MessagesComponentProps {
   chatHistory: Message[];

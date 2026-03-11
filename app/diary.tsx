@@ -1,22 +1,22 @@
+import {useFocusEffect} from '@react-navigation/native';
 import {useRouter} from 'expo-router';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
+  Keyboard,
+  SafeAreaView,
+  ScrollView,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  Keyboard,
+  View,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
 import {
-  getTodayISO,
-  getDiaryDay,
-  saveDiaryDay,
-  getRecentDiaryDays,
   type DiaryDay,
+  getDiaryDay,
+  getRecentDiaryDays,
+  getTodayISO,
+  saveDiaryDay,
 } from '../utils/diary';
 
 const MAX_ENTRIES = 5;
@@ -30,7 +30,15 @@ function formatDateJapanese(dateStr: string): string {
 }
 
 function getDayOfWeekJapanese(dateStr: string): string {
-  const days = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
+  const days = [
+    '日曜日',
+    '月曜日',
+    '火曜日',
+    '水曜日',
+    '木曜日',
+    '金曜日',
+    '土曜日',
+  ];
   const date = new Date(dateStr + 'T00:00:00');
   return days[date.getDay()];
 }
@@ -72,9 +80,7 @@ export default function DiaryScreen() {
         }
 
         // Filter out today from previous days, show newest first
-        const prev = recent
-          .filter((d) => d.date !== todayISO)
-          .reverse();
+        const prev = recent.filter((d) => d.date !== todayISO).reverse();
         setPreviousDays(prev);
         setLoaded(true);
       })();
@@ -139,9 +145,7 @@ export default function DiaryScreen() {
         <Text style={styles.yesterdayDay}>
           {getDayOfWeekJapanese(yesterdayISO)}
         </Text>
-        <Text style={styles.todayDay}>
-          {getDayOfWeekJapanese(todayISO)}
-        </Text>
+        <Text style={styles.todayDay}>{getDayOfWeekJapanese(todayISO)}</Text>
 
         {/* Today's entries */}
         <View style={styles.entriesSection}>
@@ -206,7 +210,9 @@ export default function DiaryScreen() {
 
       {/* Dictionary panel stub */}
       <View style={styles.dictionaryStub}>
-        <TouchableOpacity style={[styles.dictionaryTab, styles.dictionaryTabActive]}>
+        <TouchableOpacity
+          style={[styles.dictionaryTab, styles.dictionaryTabActive]}
+        >
           <Text style={styles.dictionaryTabText}>Dictionary</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.dictionaryTab}>

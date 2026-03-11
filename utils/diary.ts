@@ -43,9 +43,7 @@ export async function getDiaryIndex(): Promise<string[]> {
   return raw ? JSON.parse(raw) : [];
 }
 
-export async function getRecentDiaryDays(
-  limit = 7,
-): Promise<DiaryDay[]> {
+export async function getRecentDiaryDays(limit = 7): Promise<DiaryDay[]> {
   const index = await getDiaryIndex();
   const recentDates = index.slice(-limit);
   const days: DiaryDay[] = [];

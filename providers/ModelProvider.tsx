@@ -1,5 +1,6 @@
-import React, {createContext, useContext} from 'react';
-import {useLLM, QWEN3_1_7B_QUANTIZED} from 'react-native-executorch';
+import type React from 'react';
+import {createContext, useContext} from 'react';
+import {QWEN3_1_7B_QUANTIZED, useLLM} from 'react-native-executorch';
 
 // Change this one line to swap models during testing
 const ACTIVE_MODEL = QWEN3_1_7B_QUANTIZED;
@@ -18,16 +19,8 @@ export function useModel() {
   return ctx.llm;
 }
 
-export default function ModelProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ModelProvider({children}: {children: React.ReactNode}) {
   const llm = useLLM({model: ACTIVE_MODEL});
 
-  return (
-    <ModelContext value={{llm}}>
-      {children}
-    </ModelContext>
-  );
+  return <ModelContext value={{llm}}>{children}</ModelContext>;
 }
