@@ -3969,6 +3969,11 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
+lucide-react-native@^0.577.0:
+  version "0.577.0"
+  resolved "https://registry.yarnpkg.com/lucide-react-native/-/lucide-react-native-0.577.0.tgz#b22ec66a6dde4cee901a97ae29dc3802654ba050"
+  integrity sha512-blWv/YqBMrgkYGAgm2wgWiGP1+1GNBf4f/sUlpyfEL8mxvSzhr7H/0MTS1xQgtd1B6gPC/JIPgP3kcdFjnh8zg==
+
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-2.1.0.tgz#5f0310e18b8be898cc07009295a30ae41e91e6f5"
@@ -5219,7 +5224,7 @@ react-native-drawer-layout@^4.2.2:
     color "^4.2.3"
     use-latest-callback "^0.2.4"
 
-"react-native-executorch@workspace:*":
+react-native-executorch@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/react-native-executorch/-/react-native-executorch-0.7.2.tgz#0b1de47d7234c93e96a6eab9909b6fd8b1ee812b"
   integrity sha512-pB8cvw6PKJUiZytekri0hR3QwleaT2OL+RhfbomU4NLP+JZ1pa6mbQAAeyRzSPSc/lwUYlZy+TbdD1xn15iF0A==
