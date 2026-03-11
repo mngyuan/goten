@@ -19,6 +19,9 @@ export function getTodayISO(): string {
   return `${year}-${month}-${day}`;
 }
 
+/*
+ * Returns the diary day for the given date, or null if not found.
+ */
 export async function getDiaryDay(date: string): Promise<DiaryDay | null> {
   const raw = await AsyncStorage.getItem(diaryKey(date));
   if (!raw) return null;
@@ -38,6 +41,9 @@ export async function saveDiaryDay(day: DiaryDay): Promise<void> {
   }
 }
 
+/*
+ * Returns a list of all diary dates in ISO format, sorted ascending.
+ */
 export async function getDiaryIndex(): Promise<string[]> {
   const raw = await AsyncStorage.getItem(DIARY_INDEX_KEY);
   return raw ? JSON.parse(raw) : [];
@@ -52,4 +58,20 @@ export async function getRecentDiaryDays(limit = 7): Promise<DiaryDay[]> {
     if (day) days.push(day);
   }
   return days;
+}
+
+export async function getDiaryWeek(date: string): Promise<DiaryDay[]> {
+  const target = new Date(date + 'T00:00:00');
+  const dayOfWeek = target.getDay();
+  const start = new Date(target);
+  start.setDate(target.getDate() - dayOfWeek);
+  const week: DiaryDay[] = [];
+  for (let i = 0; i < 7; i++) {
+    const current = new Date(start);
+    current.setDate(start.getDate() + i);
+    const iso = current.toISOString().slice(0, 10);
+    const day = await getDiaryDay(iso);
+    if (day) week.push(day);
+  }
+  return week;
 }

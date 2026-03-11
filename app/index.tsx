@@ -1,15 +1,12 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {useRouter} from 'expo-router';
+import {useFocusEffect, useRouter} from 'expo-router';
+import {NotebookPen} from 'lucide-react-native';
 import {useCallback, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Spinner from '../components/Spinner';
-import {useModel} from '../providers/ModelProvider';
-import {getDiaryDay, getTodayISO} from '../utils/diary';
+import {getDiaryDay, getTodayISO} from '@/utils/diary';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const llm = useModel();
   const [todayHasEntries, setTodayHasEntries] = useState(false);
 
   useFocusEffect(
@@ -22,35 +19,17 @@ export default function HomeScreen() {
     }, []),
   );
 
-  if (!llm.isReady) {
-    return (
-      <Spinner
-        visible={true}
-        textContent={`Loading model ${(llm.downloadProgress * 100).toFixed(0)}%`}
-      />
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Text style={styles.menuIcon}>☰</Text>
-        </TouchableOpacity>
-      </View>
       <View style={styles.content}>
         <Text style={styles.title}>Goten</Text>
       </View>
-      <View style={styles.bottom}>
-        <TouchableOpacity
-          style={styles.diaryButton}
-          onPress={() => router.push('/diary')}
-        >
-          <Text style={styles.diaryButtonText}>
-            {todayHasEntries ? "Today's Diary" : 'Start Writing'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.diaryButton}
+        onPress={() => router.push('/diary')}
+      >
+        <NotebookPen size={32} color="#fff" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -85,14 +64,16 @@ const styles = StyleSheet.create({
     color: '#000',
     fontFamily: 'medium',
   },
-  bottom: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-  },
   diaryButton: {
+    height: 60,
+    width: 60,
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    justifyContent: 'center',
+
     backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 16,
+    borderRadius: '50%',
     alignItems: 'center',
   },
   diaryButtonText: {

@@ -1,16 +1,15 @@
-import {Stack} from 'expo-router';
+import {Drawer} from 'expo-router/drawer';
 import React from 'react';
 import ModelProvider from '../providers/ModelProvider';
-import { Drawer } from 'expo-router/drawer';
 
 export default function RootLayout() {
   return (
     <ModelProvider>
       <Drawer>
-        <Drawer.Screen name="index" options={{ title: 'Home' }} />
-        <Drawer.Screen name="entry/[id]" options={{ title: 'Entry' }} />
-        <Drawer.Screen name="settings" options={{ title: 'Settings' }} />
-        </Drawer>
+        <Drawer.Screen name="index" options={{title: 'Goten'}} />
+        <Drawer.Screen name="diary" options={{title: 'Diary'}} />
+        <Drawer.Screen name="settings" options={{title: 'Settings'}} />
+      </Drawer>
     </ModelProvider>
   );
 }

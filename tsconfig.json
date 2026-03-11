@@ -12,7 +12,12 @@
     "moduleDetection": "force",
     "moduleResolution": "bundler",
     "customConditions": ["react-native"],
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
   },
   "exclude": [
     "node_modules",
