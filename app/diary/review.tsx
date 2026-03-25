@@ -1,7 +1,6 @@
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useFocusEffect} from '@react-navigation/native';
 import {useRouter} from 'expo-router';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Keyboard,
@@ -17,8 +16,9 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AnimatedChatLoading from '@/components/AnimatedChatLoading';
 import Spinner from '@/components/Spinner';
+import {useDiary} from '@/providers/DiaryProvider';
 import {useModel} from '@/providers/ModelProvider';
-import {getDiaryDay, getTodayISO} from '@/utils/diary';
+import {getTodayISO} from '@/utils/diary';
 import {buildSystemPrompt} from '@/utils/systemPrompt';
 
 const SHOW_THINKING = true;
@@ -250,21 +250,11 @@ const LLMChatArea = ({
 
 export default function ReviewScreen() {
   const router = useRouter();
-  const [diaryEntries, setDiaryEntries] = useState<string[]>([]);
+  const {getDay} = useDiary();
+  const today = getDay(getTodayISO());
+  const diaryEntries = today.entries.filter((e) => e.trim().length > 0);
 
   const [mode, setMode] = useState<ReviewMode>('review');
-  // Load diary entries on focus
-  useFocusEffect(
-    useCallback(() => {
-      (async () => {
-        const today = await getDiaryDay(getTodayISO());
-        if (today) {
-          const filled = today.entries.filter((e) => e.trim().length > 0);
-          setDiaryEntries(filled);
-        }
-      })();
-    }, []),
-  );
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>

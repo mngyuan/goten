@@ -1,23 +1,14 @@
-import {useFocusEffect, useRouter} from 'expo-router';
+import {useRouter} from 'expo-router';
 import {NotebookPen} from 'lucide-react-native';
-import {useCallback, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {getDiaryDay, getTodayISO} from '@/utils/diary';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [todayHasEntries, setTodayHasEntries] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      getDiaryDay(getTodayISO()).then((day) => {
-        setTodayHasEntries(
-          !!day && day.entries.some((e) => e.trim().length > 0),
-        );
-      });
-    }, []),
-  );
+  const today = getDiaryDay(getTodayISO());
+  const todayHasEntries =
+    !!today && today.entries.some((e) => e.trim().length > 0);
 
   return (
     <SafeAreaView style={styles.container}>

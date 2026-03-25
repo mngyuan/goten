@@ -1,11 +1,11 @@
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useFocusEffect} from '@react-navigation/native';
 import {useRouter} from 'expo-router';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useRef, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,14 +15,8 @@ import {
   View,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {
-  type DiaryDay,
-  getDiaryDay,
-  getDiaryWeek,
-  getRecentDiaryDays,
-  getTodayISO,
-  saveDiaryDay,
-} from '@/utils/diary';
+import {useDiary} from '@/providers/DiaryProvider';
+import {getTodayISO} from '@/utils/diary';
 
 const MAX_ENTRIES = 5;
 
@@ -48,63 +42,26 @@ function getDayOfWeekJapanese(dateStr: string): string {
   return days[date.getDay()];
 }
 
-function getYesterdayISO(): string {
-  const now = new Date();
-  now.setDate(now.getDate() - 1);
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-const DayEditor = ({day}: {day: DiaryDay}) => {
-  const [entries, setEntries] = useState<string[]>(['']);
+const DayEditor = ({date}: {date: string}) => {
+  const {getDay, updateEntry, addEntry} = useDiary();
+  const day = getDay(date);
   const inputRefs = useRef<(TextInput | null)[]>([]);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const updateEntry = (index: number, text: string) => {
-    setEntries((prev) => {
-      const next = [...prev];
-      next[index] = text;
-      return next;
-    });
-  };
-
-  const addEntry = () => {
-    if (entries.length >= MAX_ENTRIES) return;
-    setEntries((prev) => [...prev, '']);
-    // Focus the new input after render
+  const handleAddEntry = () => {
+    if (day.entries.length >= MAX_ENTRIES) return;
+    addEntry(date);
     setTimeout(() => {
-      inputRefs.current[entries.length]?.focus();
+      inputRefs.current[day.entries.length]?.focus();
     }, 100);
   };
 
-  const hasEntries = entries.some((e) => e.trim().length > 0);
-
-  // Auto-save with debounce
-  useEffect(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    saveTimeoutRef.current = setTimeout(() => {
-      saveDiaryDay({date: day.date, entries});
-    }, 500);
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [entries, day.date]);
-
   return (
     <>
-      {/* Date heading */}
       <View style={styles.header}>
-        <Text style={styles.dateHeading}>{formatDateJapanese(day.date)}</Text>
-        <Text style={styles.todayDay}>{getDayOfWeekJapanese(day.date)}</Text>
+        <Text style={styles.todayDay}>{getDayOfWeekJapanese(date)}</Text>
       </View>
       <View style={styles.entriesSection}>
-        {entries.map((entry, index) => (
+        {day.entries.map((entry, index) => (
           <View key={index} style={styles.entryRow}>
             <Text style={styles.entryNumber}>{index + 1}.</Text>
             <TextInput
@@ -113,7 +70,7 @@ const DayEditor = ({day}: {day: DiaryDay}) => {
               }}
               style={styles.entryInput}
               value={entry}
-              onChangeText={(text) => updateEntry(index, text)}
+              onChangeText={(text) => updateEntry(date, index, text)}
               placeholder=""
               multiline={false}
               returnKeyType="done"
@@ -123,8 +80,8 @@ const DayEditor = ({day}: {day: DiaryDay}) => {
             />
           </View>
         ))}
-        {entries.length < MAX_ENTRIES && (
-          <TouchableOpacity style={styles.addButton} onPress={addEntry}>
+        {day.entries.length < MAX_ENTRIES && (
+          <TouchableOpacity style={styles.addButton} onPress={handleAddEntry}>
             <Text style={styles.addButtonText}>⊕</Text>
           </TouchableOpacity>
         )}
@@ -138,40 +95,19 @@ export default function DiaryScreen() {
   const colorScheme = useColorScheme();
   const height = useHeaderHeight();
   const todayISO = getTodayISO();
+  const {getDay} = useDiary();
 
-  const [weekDays, setWeekDays] = useState<DiaryDay[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [editingDay, setEditingDay] = useState<string | null>(todayISO);
 
-  useFocusEffect(
-    useCallback(() => {
-      const daysSinceStartOfWeek = Array(
-        new Date(todayISO + 'T00:00:00').getDay() + 1,
-      )
-        .fill(0)
-        .map((_, i) => {
-          const date = new Date(todayISO + 'T00:00:00');
-          date.setDate(date.getDate() - (date.getDay() - i));
-          return date.toISOString().slice(0, 10);
-        });
-
-      // Load each diary entry for each day since the start of the week
-      let cancelled = false;
-      (async () => {
-        const thisWeek = await Promise.all(
-          daysSinceStartOfWeek.map(
-            async (date) => (await getDiaryDay(date)) || {date, entries: ['']},
-          ),
-        );
-
-        if (cancelled) return;
-        setWeekDays(thisWeek);
-        setLoaded(true);
-      })();
-      return () => {
-        cancelled = true;
-      };
-    }, [todayISO]),
-  );
+  // Compute days from start of week through today
+  const weekDates: string[] = [];
+  const todayDate = new Date(todayISO + 'T00:00:00');
+  const dayOfWeek = todayDate.getDay();
+  for (let i = 0; i <= dayOfWeek; i++) {
+    const date = new Date(todayISO + 'T00:00:00');
+    date.setDate(todayDate.getDate() - dayOfWeek + i);
+    weekDates.push(date.toISOString().slice(0, 10));
+  }
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -188,32 +124,40 @@ export default function DiaryScreen() {
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          {weekDays.map((day) => (
-            <DayEditor key={day.date} day={day} />
-          ))}
+          {weekDates.length > 0 && (
+            <Text style={styles.dateHeading}>
+              {formatDateJapanese(weekDates[0])}から
+            </Text>
+          )}
 
-          {weekDays.map((day) => (
-            <View key={day.date} style={styles.previousDay}>
-              <Text style={styles.previousDateHeading}>
-                {formatDateJapanese(day.date)}
-              </Text>
-              <Text style={styles.previousDayName}>
-                {getDayOfWeekJapanese(day.date)}
-              </Text>
-              {day.entries
-                .filter((e) => e.trim().length > 0)
-                .map((entry, index) => (
-                  <View key={index} style={styles.previousEntryRow}>
-                    <Text style={styles.previousEntryNumber}>{index + 1}.</Text>
-                    <Text style={styles.previousEntryText}>{entry}</Text>
-                  </View>
-                ))}
-            </View>
-          ))}
+          {weekDates.map((date) => {
+            if (date === editingDay) {
+              return <DayEditor key={date} date={date} />;
+            }
+            const day = getDay(date);
+            return (
+              <Pressable key={date} onPress={() => setEditingDay(date)}>
+                <View style={styles.previousDay}>
+                  <Text style={styles.previousDayName}>
+                    {getDayOfWeekJapanese(date)}
+                  </Text>
+                  {day.entries
+                    .filter((e) => e.trim().length > 0)
+                    .map((entry, index) => (
+                      <View key={index} style={styles.previousEntryRow}>
+                        <Text style={styles.previousEntryNumber}>
+                          {index + 1}.
+                        </Text>
+                        <Text style={styles.previousEntryText}>{entry}</Text>
+                      </View>
+                    ))}
+                </View>
+              </Pressable>
+            );
+          })}
 
           <View style={{flexGrow: 1}} />
 
-          {/* Review button */}
           <TouchableOpacity
             style={styles.reviewButton}
             onPress={() => router.push('/diary/review')}
@@ -222,7 +166,6 @@ export default function DiaryScreen() {
           </TouchableOpacity>
         </ScrollView>
 
-        {/* Dictionary panel stub */}
         <View
           style={[
             styles.dictionaryStub,
@@ -259,15 +202,6 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
     gap: 12,
   },
-  menuButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-  },
-  menuIcon: {
-    fontSize: 24,
-    color: '#000',
-  },
   scrollView: {
     paddingVertical: 16,
     flex: 1,
@@ -282,7 +216,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#000',
-    marginTop: 4,
+    marginBottom: 4,
   },
   todayDay: {
     fontSize: 24,
@@ -321,13 +255,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   previousDay: {
-    marginTop: 24,
+    marginBottom: 24,
     opacity: 0.6,
-  },
-  previousDateHeading: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
   },
   previousDayName: {
     fontSize: 16,
