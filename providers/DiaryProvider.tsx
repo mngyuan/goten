@@ -13,6 +13,7 @@ type DiaryContextType = {
   getDay: (date: string) => DiaryDay;
   updateEntry: (date: string, index: number, text: string) => void;
   addEntry: (date: string) => void;
+  refresh: () => void;
 };
 
 const DiaryContext = createContext<DiaryContextType | null>(null);
@@ -85,6 +86,10 @@ export default function DiaryProvider({
     [scheduleSave],
   );
 
+  const refresh = useCallback(() => {
+    setDays(getAllDiaryDays());
+  }, []);
+
   useEffect(() => {
     return () => {
       for (const timeout of saveTimeouts.current.values()) {
@@ -94,7 +99,7 @@ export default function DiaryProvider({
   }, []);
 
   return (
-    <DiaryContext value={{days, getDay, updateEntry, addEntry}}>
+    <DiaryContext value={{days, getDay, updateEntry, addEntry, refresh}}>
       {children}
     </DiaryContext>
   );
