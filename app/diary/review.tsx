@@ -94,6 +94,11 @@ const LLMChatArea = ({
 
   // Capture completed assistant responses
   useEffect(() => {
+    console.log('LLM response updated:', {
+      response: llm.response,
+      isGenerating: llm.isGenerating,
+      initialized,
+    });
     if (!llm.isGenerating && llm.response && initialized) {
       const finalContent = SHOW_THINKING
         ? llm.response.trim()

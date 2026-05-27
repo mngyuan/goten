@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import type {DiaryDay} from '@/utils/diary';
 import {getAllDiaryDays} from '@/utils/diary';
 
@@ -47,6 +46,7 @@ function MonthCalendar({
   month: string;
   allDays: Map<string, DiaryDay>;
 }) {
+  const router = useRouter();
   const [yearStr, monthStr] = month.split('-');
   const year = Number(yearStr);
   const monthNum = Number(monthStr);
@@ -61,7 +61,7 @@ function MonthCalendar({
         <View key={week.start} style={styles.weekRow}>
           <View style={styles.dateCell}>
             <Text style={styles.weekDateText}>
-              {i !== 0 ? week.mondayDate : ''}
+              {i !== 0 || week.mondayDate === 1 ? week.mondayDate : ''}
             </Text>
           </View>
           {week.days.map((day, i) => {
@@ -73,7 +73,11 @@ function MonthCalendar({
               .get(iso)
               ?.entries.some((e) => e.trim().length > 0);
             return (
-              <View key={i} style={styles.dayCell}>
+              <TouchableOpacity
+                key={i}
+                style={styles.dayCell}
+                onPress={() => router.push(`/diary?date=${iso}`)}
+              >
                 <View
                   style={[
                     styles.dayCircle,
@@ -91,7 +95,7 @@ function MonthCalendar({
                     {WEEK_DAYS[i]}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -124,7 +128,7 @@ export default function HomeScreen() {
         style={styles.diaryButton}
         onPress={() => router.push('/diary')}
       >
-        <NotebookPen size={32} color="#fff" />
+        <NotebookPen size={32} color="#000" />
       </TouchableOpacity>
     </View>
   );
@@ -207,7 +211,7 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: 30,
     justifyContent: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: '#8DC890',
     borderRadius: 30,
     alignItems: 'center',
   },

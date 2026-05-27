@@ -1,5 +1,5 @@
 import {useHeaderHeight} from '@react-navigation/elements';
-import {useRouter} from 'expo-router';
+import {useLocalSearchParams, useRouter} from 'expo-router';
 import {useRef, useState} from 'react';
 import {
   Keyboard,
@@ -72,7 +72,9 @@ const DayEditor = ({date}: {date: string}) => {
               value={entry}
               onChangeText={(text) => updateEntry(date, index, text)}
               placeholder=""
-              multiline={false}
+              multiline
+              scrollEnabled={false}
+              textAlignVertical="top"
               returnKeyType="done"
               onSubmitEditing={() => {
                 Keyboard.dismiss();
@@ -94,23 +96,45 @@ export default function DiaryScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const height = useHeaderHeight();
+  const {date: dateISO} = useLocalSearchParams<{date?: string}>();
   const todayISO = getTodayISO();
   const {getDay} = useDiary();
 
-  const [editingDay, setEditingDay] = useState<string | null>(todayISO);
+  const [editingDay, setEditingDay] = useState<string | null>(
+    dateISO ?? todayISO,
+  );
 
-  // Compute days from start of week through today
   const weekDates: string[] = [];
-  const todayDate = new Date(todayISO + 'T00:00:00');
-  const dayOfWeek = todayDate.getDay();
-  for (let i = 0; i <= dayOfWeek; i++) {
-    const date = new Date(todayISO + 'T00:00:00');
-    date.setDate(todayDate.getDate() - dayOfWeek + i);
-    weekDates.push(date.toISOString().slice(0, 10));
+  if (dateISO) {
+    // Compute days of the week dateISO is in
+    // Convert to UTC date otherwise new Date(dateISO) could be like
+    // <previous date>T23:00:00 in BST
+    const [yearStr, monthStr, dayStr] = dateISO.split('-').map(Number);
+    const date = new Date(Date.UTC(yearStr, monthStr - 1, dayStr));
+    date.setDate(date.getDate() - date.getDay());
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(date);
+      d.setDate(date.getDate() + i);
+      weekDates.push(d.toISOString().slice(0, 10));
+    }
+  } else {
+    // Compute days from start of week through today
+    const todayDate = new Date(todayISO + 'T00:00:00');
+    const dayOfWeek = todayDate.getDay();
+    for (let i = 0; i <= dayOfWeek; i++) {
+      const date = new Date(todayISO + 'T00:00:00');
+      date.setDate(todayDate.getDate() - dayOfWeek + i);
+      weekDates.push(date.toISOString().slice(0, 10));
+    }
   }
 
+  const hasEntries = weekDates.some((date) => {
+    const day = getDay(date);
+    return day.entries.some((e) => e.trim().length > 0);
+  });
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         keyboardVerticalOffset={height}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -159,8 +183,9 @@ export default function DiaryScreen() {
           <View style={{flexGrow: 1}} />
 
           <TouchableOpacity
-            style={styles.reviewButton}
+            style={[styles.reviewButton, !hasEntries && {opacity: 0.5}]}
             onPress={() => router.push('/diary/review')}
+            disabled={!hasEntries}
           >
             <Text style={styles.reviewButtonText}>Review</Text>
           </TouchableOpacity>
@@ -196,6 +221,7 @@ export default function DiaryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
@@ -229,7 +255,7 @@ const styles = StyleSheet.create({
   },
   entryRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 8,
   },
   entryNumber: {
@@ -237,6 +263,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     marginRight: 4,
+    paddingTop: 4,
     width: 24,
   },
   entryInput: {

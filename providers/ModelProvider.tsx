@@ -1,3 +1,4 @@
+import * as Device from 'expo-device';
 import type React from 'react';
 import {createContext, useContext} from 'react';
 import {QWEN3_1_7B_QUANTIZED, useLLM} from 'react-native-executorch';
@@ -20,6 +21,15 @@ export function useModel() {
 }
 
 export default function ModelProvider({children}: {children: React.ReactNode}) {
+  if (Device.isDevice) {
+    return <ModelProviderInner>{children}</ModelProviderInner>;
+  } else {
+    // Simulator can't load model (because of RAM?)
+    return <>{children}</>;
+  }
+}
+
+function ModelProviderInner({children}: {children: React.ReactNode}) {
   const llm = useLLM({model: ACTIVE_MODEL});
 
   return <ModelContext value={{llm}}>{children}</ModelContext>;
