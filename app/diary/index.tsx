@@ -1,7 +1,8 @@
 import {useHeaderHeight} from '@react-navigation/elements';
 import {useLocalSearchParams, useRouter} from 'expo-router';
-import {useRef, useState} from 'react';
+import {useMemo, useRef, useState} from 'react';
 import {
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -16,6 +17,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDiary} from '@/providers/DiaryProvider';
+import {useExamples} from '@/providers/ExamplesProvider';
 import {getTodayISO} from '@/utils/diary';
 
 const MAX_ENTRIES = 5;
@@ -42,7 +44,13 @@ function getDayOfWeekJapanese(dateStr: string): string {
   return days[date.getDay()];
 }
 
-const DayEditor = ({date}: {date: string}) => {
+const DayEditor = ({
+  date,
+  onActiveEntryChange,
+}: {
+  date: string;
+  onActiveEntryChange: (text: string) => void;
+}) => {
   const {getDay, updateEntry, addEntry} = useDiary();
   const day = getDay(date);
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -70,7 +78,12 @@ const DayEditor = ({date}: {date: string}) => {
               }}
               style={styles.entryInput}
               value={entry}
-              onChangeText={(text) => updateEntry(date, index, text)}
+              onChangeText={(text) => {
+                updateEntry(date, index, text);
+                onActiveEntryChange(text);
+              }}
+              onFocus={() => onActiveEntryChange(entry)}
+              onBlur={() => onActiveEntryChange('')}
               placeholder=""
               multiline
               scrollEnabled={false}
@@ -102,6 +115,18 @@ export default function DiaryScreen() {
 
   const [editingDay, setEditingDay] = useState<string | null>(
     dateISO ?? todayISO,
+  );
+  const [activeEntryText, setActiveEntryText] = useState('');
+  const {search} = useExamples();
+
+  const query = useMemo(() => {
+    const match = activeEntryText.match(/[A-Za-z]+$/);
+    return match ? match[0] : '';
+  }, [activeEntryText]);
+
+  const suggestions = useMemo(
+    () => (query ? search(query) : []),
+    [query, search],
   );
 
   const weekDates: string[] = [];
@@ -156,7 +181,13 @@ export default function DiaryScreen() {
 
           {weekDates.map((date) => {
             if (date === editingDay) {
-              return <DayEditor key={date} date={date} />;
+              return (
+                <DayEditor
+                  key={date}
+                  date={date}
+                  onActiveEntryChange={setActiveEntryText}
+                />
+              );
             }
             const day = getDay(date);
             return (
@@ -213,6 +244,41 @@ export default function DiaryScreen() {
             <Text style={styles.dictionaryTabText}>Examples</Text>
           </TouchableOpacity>
         </View>
+
+        {suggestions.length > 0 && (
+          <FlatList
+            style={[
+              styles.suggestions,
+              {
+                backgroundColor: colorScheme === 'dark' ? '#000' : '#fff',
+                borderTopColor: colorScheme === 'dark' ? '#333' : '#eee',
+              },
+            ]}
+            data={suggestions}
+            keyboardShouldPersistTaps="handled"
+            keyExtractor={(_, i) => String(i)}
+            renderItem={({item: [jp, en]}) => (
+              <View style={styles.suggestionRow}>
+                <Text
+                  style={[
+                    styles.suggestionJp,
+                    {color: colorScheme === 'dark' ? '#fff' : '#000'},
+                  ]}
+                >
+                  {jp}
+                </Text>
+                <Text
+                  style={[
+                    styles.suggestionEn,
+                    {color: colorScheme === 'dark' ? '#aaa' : '#666'},
+                  ]}
+                >
+                  {en}
+                </Text>
+              </View>
+            )}
+          />
+        )}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -317,6 +383,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  suggestions: {
+    maxHeight: 180,
+    borderTopWidth: 1,
+  },
+  suggestionRow: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  suggestionJp: {
+    fontSize: 16,
+  },
+  suggestionEn: {
+    fontSize: 13,
+    marginTop: 2,
   },
   dictionaryStub: {
     flexDirection: 'row',
