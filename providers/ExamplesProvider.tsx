@@ -8,15 +8,12 @@ import {
   useMemo,
   useState,
 } from 'react';
+import {escapeRegExp} from '@/utils/regex';
 
 type ExamplesContextType = {
   data: string[][];
   search: (query: string) => string[][];
 };
-
-function escapeRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
 const ExamplesContext = createContext<ExamplesContextType | null>(null);
 
@@ -46,19 +43,18 @@ export default function ExamplesProvider({
   const search = useCallback(
     (query: string) => {
       if (!data || !query.trim()) return [];
-      const re = new RegExp(escapeRegExp(query), 'i');
-      return data.filter(([jp, en]) => re.test(jp ?? '') || re.test(en ?? ''));
+      const re = new RegExp('\\b' + escapeRegExp(query), 'i');
+      return data.filter(([en, jp]) => re.test(jp ?? '') || re.test(en ?? ''));
     },
     [data],
   );
 
-  const value = useMemo(
-    () => (data ? {data, search} : null),
-    [data, search],
-  );
+  const value = useMemo(() => (data ? {data, search} : null), [data, search]);
 
   if (!value) return <>{children}</>;
   return (
-    <ExamplesContext.Provider value={value}>{children}</ExamplesContext.Provider>
+    <ExamplesContext.Provider value={value}>
+      {children}
+    </ExamplesContext.Provider>
   );
 }

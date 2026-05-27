@@ -19,6 +19,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDiary} from '@/providers/DiaryProvider';
 import {useExamples} from '@/providers/ExamplesProvider';
 import {getTodayISO} from '@/utils/diary';
+import {escapeRegExp} from '@/utils/regex';
 
 const MAX_ENTRIES = 5;
 
@@ -120,7 +121,7 @@ export default function DiaryScreen() {
   const {search} = useExamples();
 
   const query = useMemo(() => {
-    const match = activeEntryText.match(/[A-Za-z]+$/);
+    const match = activeEntryText.match(/[A-Za-z ]+$/);
     return match ? match[0] : '';
   }, [activeEntryText]);
 
@@ -231,6 +232,9 @@ export default function DiaryScreen() {
             },
           ]}
         >
+          <TouchableOpacity style={styles.dictionaryTab}>
+            <Text style={styles.dictionaryTabText}>Dictionary</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.dictionaryTab,
@@ -238,10 +242,7 @@ export default function DiaryScreen() {
               {borderBottomColor: colorScheme === 'dark' ? '#fff' : '#000'},
             ]}
           >
-            <Text>Dictionary</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.dictionaryTab}>
-            <Text style={styles.dictionaryTabText}>Examples</Text>
+            <Text>Examples</Text>
           </TouchableOpacity>
         </View>
 
@@ -257,7 +258,7 @@ export default function DiaryScreen() {
             data={suggestions}
             keyboardShouldPersistTaps="handled"
             keyExtractor={(_, i) => String(i)}
-            renderItem={({item: [jp, en]}) => (
+            renderItem={({item: [en, jp]}) => (
               <View style={styles.suggestionRow}>
                 <Text
                   style={[
@@ -273,7 +274,21 @@ export default function DiaryScreen() {
                     {color: colorScheme === 'dark' ? '#aaa' : '#666'},
                   ]}
                 >
-                  {en}
+                  {console.log({en, query}) ||
+                    (query
+                      ? en.split(
+                          new RegExp('(\\b' + escapeRegExp(query) + ')', 'i'),
+                        )
+                      : [en]
+                    ).map((part, i) =>
+                      i % 2 === 1 ? (
+                        <Text key={i} style={[styles.suggestionEnMatch]}>
+                          {part}
+                        </Text>
+                      ) : (
+                        part
+                      ),
+                    )}
                 </Text>
               </View>
             )}
@@ -385,7 +400,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   suggestions: {
-    maxHeight: 180,
+    maxHeight: '50%',
     borderTopWidth: 1,
   },
   suggestionRow: {
@@ -398,6 +413,10 @@ const styles = StyleSheet.create({
   suggestionEn: {
     fontSize: 13,
     marginTop: 2,
+  },
+  suggestionEnMatch: {
+    fontWeight: '700',
+    color: '#007AFF',
   },
   dictionaryStub: {
     flexDirection: 'row',
