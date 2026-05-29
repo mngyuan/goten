@@ -274,21 +274,20 @@ export default function DiaryScreen() {
                     {color: colorScheme === 'dark' ? '#aaa' : '#666'},
                   ]}
                 >
-                  {console.log({en, query}) ||
-                    (query
-                      ? en.split(
-                          new RegExp('(\\b' + escapeRegExp(query) + ')', 'i'),
-                        )
-                      : [en]
-                    ).map((part, i) =>
-                      i % 2 === 1 ? (
-                        <Text key={i} style={[styles.suggestionEnMatch]}>
-                          {part}
-                        </Text>
-                      ) : (
-                        part
-                      ),
-                    )}
+                  {(query
+                    ? en.split(
+                        new RegExp('(\\b' + escapeRegExp(query) + ')', 'i'),
+                      )
+                    : [en]
+                  ).map((part, i) =>
+                    i % 2 === 1 ? (
+                      <Text key={i} style={[styles.suggestionEnMatch]}>
+                        {part}
+                      </Text>
+                    ) : (
+                      part
+                    ),
+                  )}
                 </Text>
               </View>
             )}
